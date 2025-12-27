@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'core',
-    'bootstrap5',
+    'django_bootstrap5',
     'stdimage',
 ]
 
@@ -125,3 +125,16 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
+# configs para enviar emails
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# para quando tem de fato um servidor de emails:
+'''
+EMAIL_HOST = 'localhost'
+EMAIL_HOST_USER = 'no-reply@seudominio.com.br'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_PASSWORD = 'sua-senha'
+'''
