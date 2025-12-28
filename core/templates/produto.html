@@ -5,11 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Produto</title>
+    {% bootstrap_css %}
 </head>
 <body class="bg-light">
-    
-    <h1>Produto</h1>
+    <div class="container">
+        <h1>Produto</h1>
+        {% bootstrap_messages %}
 
-    {% bootstrap_javascript %}
+        <form action="{% url 'produto' %}" method="post" class="form" autocomplete="off" enctype="multipart/form-data"> <!-- enctype desse jeito para caeitar upload de arquivos-->
+            {% csrf_token %}
+
+            {% bootstrap_form form %}
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
+            </div>
+        </form>
+    </div>
+
+{% bootstrap_javascript %}
 </body>
 </html>

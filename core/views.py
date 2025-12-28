@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib import messages
 # Create your views here.
 
-from .forms import ContatoForm
+from .forms import ContatoForm, ProdutoModelForm
 
 def index(request):
     return render(request, 'index.html')
@@ -25,4 +25,27 @@ def contato(request):
     return render(request, 'contato.html', context)
 
 def produto(request):
-    return render(request, 'produto.html')
+
+    if request.method == 'POST':
+        form = ProdutoModelForm(request.POST, request.FILES)  # esse request.FILES é para poder upar arquivos
+        if form.is_valid():
+            prod= form.save(commit=False)  # commit false para nao salvar ainda no banco
+
+            print(f'Nome: {prod.nome}')
+            print(f'Preço: {prod.preco}')
+            print(f'Estoque: {prod.estoque}')
+            print(f'Imagem: {prod.imagem}')
+
+            messages.success(request, 'Produto salvo com sucesso!')
+            form = ProdutoModelForm()
+
+            # do jeito acima nao salva de fato no Banco de Dados
+
+        else:
+            messages.error(request, 'Erro ao salvar produto. Verifique os dados preenchidos.')
+    else:
+        form = ProdutoModelForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'produto.html', context)
