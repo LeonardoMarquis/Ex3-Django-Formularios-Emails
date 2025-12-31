@@ -1,11 +1,17 @@
 from django.shortcuts import render
 from django.contrib import messages
+from django.shortcuts import redirect
+
+from core.models import Produto
 # Create your views here.
 
 from .forms import ContatoForm, ProdutoModelForm
 
 def index(request):
-    return render(request, 'index.html')
+    context = {
+        'produtos': Produto.objects.all()
+    }
+    return render(request, 'index.html', context)
 
 def contato(request):
     form = ContatoForm(request.POST or None) # diz que esse form vai ter dadis ou nao(so entrou na pagina)
@@ -26,26 +32,29 @@ def contato(request):
 
 def produto(request):
 
-    if request.method == 'POST':
-        form = ProdutoModelForm(request.POST, request.FILES)  # esse request.FILES é para poder upar arquivos
-        if form.is_valid():
-            prod= form.save(commit=False)  # commit false para nao salvar ainda no banco
+    if str(request.user) != 'AnonymousUser':
 
-            print(f'Nome: {prod.nome}')
-            print(f'Preço: {prod.preco}')
-            print(f'Estoque: {prod.estoque}')
-            print(f'Imagem: {prod.imagem}')
+        if request.method == 'POST':
+            form = ProdutoModelForm(request.POST, request.FILES)  # esse request.FILES é para poder upar arquivos
+            if form.is_valid():
+                # prod= form.save(commit=False)  # commit false para nao salvar ainda no banco
 
-            messages.success(request, 'Produto salvo com sucesso!')
-            form = ProdutoModelForm()
+                # print(f'Nome: {prod.nome}')
+                # print(f'Preço: {prod.preco}')
+                # print(f'Estoque: {prod.estoque}')
+                # print(f'Imagem: {prod.imagem}')
+                # do jeito acima nao salva no Banco de Dados
+                form.save() # salva de fato no banco
+                messages.success(request, 'Produto salvo com sucesso!')
+                form = ProdutoModelForm()
 
-            # do jeito acima nao salva de fato no Banco de Dados
-
+            else:
+                messages.error(request, 'Erro ao salvar produto. Verifique os dados preenchidos.')
         else:
-            messages.error(request, 'Erro ao salvar produto. Verifique os dados preenchidos.')
+            form = ProdutoModelForm()
+        context = {
+            'form': form
+        }
+        return render(request, 'produto.html', context)
     else:
-        form = ProdutoModelForm()
-    context = {
-        'form': form
-    }
-    return render(request, 'produto.html', context)
+        return redirect('index')
